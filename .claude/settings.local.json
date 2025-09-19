@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(ng generate:*)",
-      "Bash(npm run tauri:dev:*)"
+      "Bash(npm run tauri:dev:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

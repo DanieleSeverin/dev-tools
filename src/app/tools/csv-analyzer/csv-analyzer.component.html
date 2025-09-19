@@ -128,7 +128,7 @@ Luigi,Verdi,25,Milano"
           class="legend-item"
           [style.background-color]="analysis.columnColors[i]"
         >
-          {{ hasHeader && analysis.rows.length > 0 ? analysis.rows[0].cells[i]?.value || column : column }}
+          {{ hasHeader && analysis.rows.length > 0 ? analysis.rows[0].cells[i].value || column : column }}
         </div>
       </div>
     </div>
