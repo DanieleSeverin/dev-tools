@@ -1,0 +1,10 @@
+:host { display: block; height: 100%; }
+.brand {
+    font-weight: 600; padding: 16px; font-size: 14px; letter-spacing: 0.5px;
+}
+nav { display: flex; flex-direction: column; gap: 4px; padding: 4px; }
+nav a {
+    padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #e5e7eb;
+}
+nav a:hover { background: rgba(255,255,255,0.06); }
+nav a.active { background: rgba(255,255,255,0.12); color: #fff; }

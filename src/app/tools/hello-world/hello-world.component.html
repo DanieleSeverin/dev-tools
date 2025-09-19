@@ -1,0 +1,15 @@
+<section class="panel">
+<h1>Hello World</h1>
+<p>Questo tool invia un messaggio a Rust tramite <code>invoke</code> e mostra la risposta.</p>
+
+
+<label>
+Nome:
+<input [(ngModel)]="name" placeholder="Il tuo nome" />
+</label>
+<button (click)="sayHello()" [disabled]="loading">{{ loading ? '...' : 'Invia' }}</button>
+
+
+<p *ngIf="result" class="ok">Risposta Rust: {{ result }}</p>
+<p *ngIf="error" class="err">Errore: {{ error }}</p>
+</section>

@@ -1,0 +1,26 @@
+[package]
+name = "devtools"
+version = "0.1.0"
+edition = "2021"
+
+
+# Descrizione opzionale utile in seguito (firmware/installer metadata)
+description = "Developer Tools Suite built with Tauri + Angular"
+
+
+# Output libreria per supporto mobile e per condividere l'entrypoint tra desktop/mobile
+[lib]
+name = "devtools_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+
+[build-dependencies]
+# Genera codice/macros in build time (schema permessi, ecc.)
+tauri-build = { version = "2", features = [] }
+
+
+[dependencies]
+# Runtime Tauri v2
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

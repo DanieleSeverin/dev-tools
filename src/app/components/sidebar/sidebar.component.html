@@ -1,0 +1,10 @@
+<div class="brand">DevTools Suite</div>
+    <nav>
+    <a *ngFor="let it of items"
+        [routerLink]="it.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+    >
+        {{ it.label }}
+    </a>
+</nav>

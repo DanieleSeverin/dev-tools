@@ -1,0 +1,15 @@
+.shell {
+    display: grid;
+    grid-template-columns: 260px 1fr; /* sidebar fissa + contenuto fluido */
+    height: 100dvh; /* full-height, supporta mobile/HiDPI */
+}
+
+.sidebar {
+    border-right: 1px solid #e5e7eb; /* grigio chiaro */
+    background: #0b1020; /* sidebar scura, gradevole per dev tools */
+    color: #d1d5db;
+}
+
+.content {
+    overflow: auto;
+}
