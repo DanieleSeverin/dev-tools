@@ -38,6 +38,24 @@
       </label>
     </div>
 
+    <div class="form-group">
+      <label for="ignore-patterns">Pattern di esclusione (uno per riga):</label>
+      <textarea
+        id="ignore-patterns"
+        [(ngModel)]="ignorePatterns"
+        (ngModelChange)="onIgnorePatternsChange()"
+        placeholder="es.
+node_modules
+*.log
+.git
+target"
+        class="ignore-textarea"
+        rows="4"
+        [disabled]="loading"
+      ></textarea>
+      <small class="help-text">Usa * come wildcard. Es: *.log per tutti i file .log</small>
+    </div>
+
     <div class="button-group">
       <button
         class="generate-button"
@@ -87,9 +105,30 @@
       <div
         class="tree-node"
         [class.inactive]="!node.isActive"
+        [class.ignored]="!node.isActive && isNodeOrParentIgnored(node)"
         (click)="toggleNode(node)"
+        (mouseenter)="hoveredNode = node"
+        (mouseleave)="hoveredNode = null"
       >
         <span class="node-content">{{ node.prefix }}{{ node.connector }}{{ node.name }}</span>
+        <div class="node-actions" *ngIf="hoveredNode === node">
+          <button
+            *ngIf="!isNodeInIgnoreList(node)"
+            class="action-button exclude-button"
+            (click)="$event.stopPropagation(); addNodeToIgnoreList(node)"
+            title="Aggiungi alla lista di esclusione"
+          >
+            ❌
+          </button>
+          <button
+            *ngIf="isNodeInIgnoreList(node)"
+            class="action-button include-button"
+            (click)="$event.stopPropagation(); removeNodeFromIgnoreList(node)"
+            title="Rimuovi dalla lista di esclusione"
+          >
+            ✅
+          </button>
+        </div>
       </div>
       <ng-container *ngFor="let child of node.children">
         <ng-container *ngTemplateOutlet="nodeTemplate; context: { node: child }"></ng-container>

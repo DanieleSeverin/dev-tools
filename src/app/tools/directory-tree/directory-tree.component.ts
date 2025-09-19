@@ -29,6 +29,8 @@ export class DirectoryTreeComponent {
   parsedTree: TreeNode[] = [];
   loading = false;
   error: string | null = null;
+  ignorePatterns = '';
+  hoveredNode: TreeNode | null = null;
 
   constructor(
     private readonly tauri: TauriService,
@@ -53,7 +55,9 @@ export class DirectoryTreeComponent {
 
       // Parse il risultato in una struttura ad albero interattiva
       this.parsedTree = this.parseTreeString(this.result);
-      console.log('Parsed tree structure:', this.parsedTree);
+
+      // Applica i pattern di ignore
+      this.applyIgnorePatterns();
     } catch (e: any) {
       this.error = e?.toString?.() ?? 'Errore sconosciuto';
     } finally {
@@ -103,19 +107,159 @@ export class DirectoryTreeComponent {
     this.parsedTree = [];
   }
 
+  addNodeToIgnoreList(node: TreeNode): void {
+    const patterns = this.getIgnorePatternsArray();
+    if (!patterns.includes(node.name)) {
+      patterns.push(node.name);
+      this.ignorePatterns = patterns.join('\n');
+      this.applyIgnorePatterns();
+    }
+  }
+
+  removeNodeFromIgnoreList(node: TreeNode): void {
+    const patterns = this.getIgnorePatternsArray();
+    const index = patterns.indexOf(node.name);
+    if (index > -1) {
+      patterns.splice(index, 1);
+      this.ignorePatterns = patterns.join('\n');
+
+      // Riattiva il nodo e tutti i suoi figli quando viene rimosso dall'ignore
+      this.reactivateNodeAndChildren(node);
+
+      // Riapplica i pattern per assicurarsi che tutto sia consistente
+      this.applyIgnorePatterns();
+    }
+  }
+
+  onIgnorePatternsChange(): void {
+    this.applyIgnorePatterns();
+  }
+
+  isNodeInIgnoreList(node: TreeNode): boolean {
+    return this.getIgnorePatternsArray().includes(node.name);
+  }
+
+  isNodeOrParentIgnored(node: TreeNode): boolean {
+    // Controlla se il nodo stesso è ignorato
+    if (this.isNodeInIgnoreList(node)) {
+      return true;
+    }
+
+    // Controlla se qualche parent è ignorato
+    let currentParent = node.parent;
+    while (currentParent) {
+      if (this.isNodeInIgnoreList(currentParent)) {
+        return true;
+      }
+      currentParent = currentParent.parent;
+    }
+
+    return false;
+  }
+
+  private getIgnorePatternsArray(): string[] {
+    return this.ignorePatterns
+      .split('\n')
+      .map(pattern => pattern.trim())
+      .filter(pattern => pattern.length > 0);
+  }
+
+  private applyIgnorePatterns(): void {
+    if (!this.parsedTree.length) return;
+
+    // Prima riattiva tutti i nodi che non sono disattivati manualmente
+    this.resetNodesToDefaultState(this.parsedTree);
+
+    const patterns = this.getIgnorePatternsArray();
+    if (patterns.length > 0) {
+      this.applyIgnorePatternsToNodes(this.parsedTree, patterns);
+    }
+  }
+
+  private reactivateNodeAndChildren(node: TreeNode): void {
+    // Riattiva il nodo solo se non è figlio di un parent ignorato
+    if (!this.hasIgnoredParent(node)) {
+      node.isActive = true;
+      // Riattiva ricorsivamente tutti i figli
+      this.toggleNodeChildren(node, true);
+    }
+  }
+
+  private hasIgnoredParent(node: TreeNode): boolean {
+    let currentParent = node.parent;
+    while (currentParent) {
+      if (this.isNodeInIgnoreList(currentParent)) {
+        return true;
+      }
+      currentParent = currentParent.parent;
+    }
+    return false;
+  }
+
+  private resetNodesToDefaultState(nodes: TreeNode[]): void {
+    nodes.forEach(node => {
+      // Riattiva tutti i nodi per default
+      node.isActive = true;
+      this.resetNodesToDefaultState(node.children);
+    });
+  }
+
+  private applyIgnorePatternsToNodes(nodes: TreeNode[], patterns: string[]): void {
+    nodes.forEach(node => {
+      const shouldIgnore = patterns.some(pattern => {
+        // Evita pattern vuoti o solo asterisco
+        if (!pattern || pattern.trim() === '*') {
+          return false;
+        }
+
+        // Debug: stampa il confronto
+        console.log(`Testing pattern "${pattern}" against node "${node.name}"`);
+
+        // Pattern matching: può essere nome esatto o wildcard
+        if (pattern.includes('*')) {
+          try {
+            // Sostituisci * con un placeholder temporaneo, esegui escape, poi rimetti .*
+            const placeholder = '__ASTERISK_PLACEHOLDER__';
+            const escapedPattern = pattern
+              .replace(/\*/g, placeholder)  // Sostituisci * con placeholder
+              .replace(/[.+?^${}()|[\]\\]/g, '\\$&')  // Escape caratteri speciali
+              .replace(new RegExp(placeholder, 'g'), '.*');  // Rimetti .* per *
+
+            const regex = new RegExp('^' + escapedPattern + '$', 'i');
+            const matches = regex.test(node.name);
+            console.log(`  Wildcard pattern "${pattern}" -> regex "^${escapedPattern}$" -> matches: ${matches}`);
+            return matches;
+          } catch (e) {
+            console.log(`  Regex error for pattern "${pattern}":`, e);
+            // Se la regex non è valida, usa matching esatto
+            return node.name === pattern;
+          }
+        }
+        const exactMatch = node.name === pattern;
+        console.log(`  Exact match "${pattern}" -> matches: ${exactMatch}`);
+        return exactMatch;
+      });
+
+      if (shouldIgnore) {
+        console.log(`  -> Disabling node "${node.name}"`);
+        node.isActive = false;
+        // Se il nodo è ignorato, ignora anche tutti i suoi figli
+        this.toggleNodeChildren(node, false);
+      }
+
+      // Applica ricorsivamente ai figli
+      this.applyIgnorePatternsToNodes(node.children, patterns);
+    });
+  }
+
   parseTreeString(treeString: string): TreeNode[] {
     const lines = treeString.split('\n').filter(line => line.trim());
     const nodes: TreeNode[] = [];
     const nodeStack: TreeNode[] = [];
 
-    console.log('Parsing tree with lines:', lines);
-
     lines.forEach((line, index) => {
       const depth = this.getDepth(line);
       const cleanName = this.extractName(line);
-      const originalLine = line;
-
-      console.log(`Line ${index}: "${line}" -> depth: ${depth}, name: "${cleanName}"`);
 
       const node: TreeNode = {
         id: `node-${index}`,
@@ -138,16 +282,13 @@ export class DirectoryTreeComponent {
         const parent = nodeStack[nodeStack.length - 1];
         parent.children.push(node);
         node.parent = parent;
-        console.log(`Added "${cleanName}" as child of "${parent.name}" (parent depth: ${parent.level}, child depth: ${depth})`);
       } else {
         nodes.push(node);
-        console.log(`Added "${cleanName}" as root node`);
       }
 
       nodeStack.push(node);
     });
 
-    console.log('Final parsed tree:', nodes);
     return nodes;
   }
 
@@ -174,7 +315,6 @@ export class DirectoryTreeComponent {
     // Ogni 4 caratteri di indentazione = 1 livello di profondità
     const depth = Math.floor(indentation / 4) + 1; // +1 perché il connector stesso indica un livello
 
-    console.log(`Depth calculation for "${line}": connector at ${connectorIndex}, indentation: ${indentation}, depth: ${depth}`);
     return depth;
   }
 
@@ -202,10 +342,13 @@ export class DirectoryTreeComponent {
   }
 
   toggleNode(node: TreeNode): void {
-    console.log('Toggling node:', node.name, 'from', node.isActive, 'to', !node.isActive);
+    // Non permettere di riattivare un nodo se lui o un parent è nella lista di ignore
+    if (!node.isActive && this.isNodeOrParentIgnored(node)) {
+      return;
+    }
+
     node.isActive = !node.isActive;
     this.toggleNodeChildren(node, node.isActive);
-    console.log('Children after toggle:', node.children.map(c => ({ name: c.name, isActive: c.isActive })));
 
     // Forza il change detection
     this.cdr.detectChanges();
@@ -213,7 +356,6 @@ export class DirectoryTreeComponent {
 
   private toggleNodeChildren(node: TreeNode, isActive: boolean): void {
     node.children.forEach(child => {
-      console.log('Setting child', child.name, 'to', isActive);
       child.isActive = isActive;
       this.toggleNodeChildren(child, isActive);
     });
