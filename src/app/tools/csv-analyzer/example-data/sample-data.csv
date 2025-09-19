@@ -1,0 +1,21 @@
+id,nome,cognome,età,email,città,paese,professione,salario,data_assunzione
+1,Mario,Rossi,30,mario.rossi@email.com,Roma,Italia,Sviluppatore,45000,2020-01-15
+2,Laura,Bianchi,28,laura.bianchi@email.com,Milano,Italia,Designer,38000,2021-03-22
+3,Giuseppe,Verdi,35,giuseppe.verdi@email.com,Napoli,Italia,Manager,55000,2019-07-10
+4,Anna,Gialli,42,anna.gialli@email.com,Torino,Italia,Analista,42000,2018-11-05
+5,Francesco,Blu,29,francesco.blu@email.com,Firenze,Italia,Marketing,36000,2022-02-18
+6,Giulia,Neri,31,giulia.neri@email.com,Bologna,Italia,HR,40000,2020-09-12
+7,Alessandro,Rosa,26,alessandro.rosa@email.com,Palermo,Italia,Sviluppatore,43000,2023-01-30
+8,Valentina,Viola,33,valentina.viola@email.com,Genova,Italia,Project Manager,50000,2019-12-08
+9,Roberto,Marrone,38,roberto.marrone@email.com,Venezia,Italia,Consulente,48000,2021-06-14
+10,Elena,Arancione,27,elena.arancione@email.com,Bari,Italia,Sviluppatore,41000,2022-08-25
+11,Davide,Verde,31,davide.verde@email.com,Catania,Italia,Designer,37000,2020-04-11
+12,Chiara,Azzurro,29,chiara.azzurro@email.com,Verona,Italia,Analista,39000,2021-10-03
+13,Matteo,Grigio,34,matteo.grigio@email.com,Padova,Italia,Manager,52000,2018-05-20
+14,Federica,Oro,25,federica.oro@email.com,Brescia,Italia,Marketing,35000,2023-03-15
+15,Luca,Argento,40,luca.argento@email.com,Modena,Italia,HR,44000,2019-08-30
+16,Silvia,Bronzo,32,silvia.bronzo@email.com,Pisa,Italia,Sviluppatore,46000,2020-12-01
+17,Marco,Rame,28,marco.rame@email.com,Perugia,Italia,Project Manager,49000,2022-01-07
+18,Francesca,Platino,36,francesca.platino@email.com,Ancona,Italia,Consulente,47000,2021-04-26
+19,Stefano,Ferro,33,stefano.ferro@email.com,Cagliari,Italia,Designer,38500,2020-07-19
+20,Martina,Zinco,30,martina.zinco@email.com,Trieste,Italia,Analista,41500,2022-11-12

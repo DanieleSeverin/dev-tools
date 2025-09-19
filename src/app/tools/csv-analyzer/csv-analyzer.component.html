@@ -1,0 +1,177 @@
+<div class="csv-analyzer-container">
+  <h2>CSV Analyzer</h2>
+  <p class="description">
+    Analizza la struttura dei file CSV, evidenzia le colonne con colori diversi e rileva errori strutturali.
+  </p>
+
+  <div class="input-section">
+    <div class="form-group">
+      <label for="csv-content">Contenuto CSV:</label>
+      <textarea
+        id="csv-content"
+        [(ngModel)]="csvContent"
+        placeholder="Incolla qui il contenuto CSV o carica un file...
+Esempio:
+nome,cognome,età,città
+Mario,Rossi,30,Roma
+Luigi,Verdi,25,Milano"
+        class="csv-textarea"
+        rows="8"
+      ></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group" *ngIf="csvContent.trim()">
+        <label for="delimiter">Delimitatore rilevato:</label>
+        <select
+          id="delimiter"
+          [(ngModel)]="delimiter"
+          (ngModelChange)="onDelimiterChange()"
+          class="delimiter-select"
+        >
+          <option value=",">Virgola (,)</option>
+          <option value=";">Punto e virgola (;)</option>
+          <option value="|">Pipe (|)</option>
+          <option value="	">Tab</option>
+        </select>
+        <small class="help-text">Cambia se il rilevamento automatico non è corretto</small>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [(ngModel)]="hasHeader"
+            (ngModelChange)="onHeaderChange()"
+          />
+          <span>Prima riga contiene intestazioni</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="file-upload">
+      <label for="csv-file" class="file-upload-label">
+        📁 Carica file CSV
+        <input
+          id="csv-file"
+          type="file"
+          accept=".csv"
+          (change)="onFileSelected($event)"
+          class="file-input"
+        />
+      </label>
+    </div>
+
+    <div class="button-group">
+      <button class="analyze-button" (click)="analyzeCsv()" [disabled]="!csvContent.trim()">
+        🔍 Analizza CSV
+      </button>
+      <button *ngIf="analysis" class="clear-button" (click)="clearAnalysis()">
+        🗑️ Pulisci
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="analysis" class="results-section">
+    <div class="analysis-summary">
+      <h3>Riepilogo Analisi</h3>
+      <div class="summary-stats">
+        <div class="stat">
+          <strong>Righe totali:</strong> {{ analysis.totalRows }}
+        </div>
+        <div class="stat">
+          <strong>Colonne attese:</strong> {{ analysis.expectedColumnCount }}
+        </div>
+        <div class="stat" [class.error]="analysis.structuralErrors > 0">
+          <strong>Errori strutturali:</strong> {{ analysis.structuralErrors }}
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="analysis.structuralErrors > 0" class="warning-message">
+      ⚠️ Sono stati rilevati errori strutturali nel CSV. Le righe problematiche sono evidenziate in rosso.
+
+      <div class="error-navigation">
+        <div class="error-navigation-info">
+          {{ getErrorNavigationText() }}
+        </div>
+        <div class="error-navigation-buttons">
+          <button
+            class="nav-button prev-button"
+            (click)="navigateToPreviousError()"
+            [disabled]="errorRows.length === 0"
+            title="Errore precedente"
+          >
+            ⬅️ Precedente
+          </button>
+          <button
+            class="nav-button next-button"
+            (click)="navigateToNextError()"
+            [disabled]="errorRows.length === 0"
+            title="Errore successivo"
+          >
+            Successivo ➡️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="column-legend">
+      <h4>Legenda Colonne</h4>
+      <div class="legend-items">
+        <div
+          *ngFor="let column of analysis.columns; index as i"
+          class="legend-item"
+          [style.background-color]="analysis.columnColors[i]"
+        >
+          {{ hasHeader && analysis.rows.length > 0 ? analysis.rows[0].cells[i]?.value || column : column }}
+        </div>
+      </div>
+    </div>
+
+    <div class="csv-table-container">
+      <table class="csv-table">
+        <thead *ngIf="hasHeader && analysis.rows.length > 0">
+          <tr>
+            <th class="row-header">Riga</th>
+            <th
+              *ngFor="let cell of analysis.rows[0].cells; index as i"
+              [style.background-color]="getCellBackgroundColor(i)"
+              class="column-header"
+            >
+              {{ cell.value }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let row of analysis.rows; index as rowIndex"
+            [class.error-row]="row.hasStructuralError"
+            [class.header-row]="hasHeader && rowIndex === 0"
+            [class.current-error]="isCurrentErrorRow(rowIndex)"
+            [attr.data-row-index]="rowIndex"
+          >
+            <td class="row-number">
+              {{ rowIndex + 1 }}
+              <span *ngIf="row.hasStructuralError" class="error-indicator" [title]="row.errorMessage">⚠️</span>
+            </td>
+            <td
+              *ngFor="let cell of row.cells; index as colIndex"
+              [style.background-color]="getCellBackgroundColor(colIndex)"
+              class="csv-cell"
+              [class.escaped-cell]="cell.isEscaped"
+              [title]="cell.isEscaped ? 'Contiene caratteri di escape' : ''"
+            >
+              <span class="cell-content">{{ cell.value }}</span>
+              <span *ngIf="cell.isEscaped" class="escape-indicator">\\</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

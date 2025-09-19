@@ -212,9 +212,6 @@ export class DirectoryTreeComponent {
           return false;
         }
 
-        // Debug: stampa il confronto
-        console.log(`Testing pattern "${pattern}" against node "${node.name}"`);
-
         // Pattern matching: può essere nome esatto o wildcard
         if (pattern.includes('*')) {
           try {
@@ -227,21 +224,16 @@ export class DirectoryTreeComponent {
 
             const regex = new RegExp('^' + escapedPattern + '$', 'i');
             const matches = regex.test(node.name);
-            console.log(`  Wildcard pattern "${pattern}" -> regex "^${escapedPattern}$" -> matches: ${matches}`);
             return matches;
           } catch (e) {
-            console.log(`  Regex error for pattern "${pattern}":`, e);
             // Se la regex non è valida, usa matching esatto
             return node.name === pattern;
           }
         }
-        const exactMatch = node.name === pattern;
-        console.log(`  Exact match "${pattern}" -> matches: ${exactMatch}`);
-        return exactMatch;
+        return node.name === pattern;
       });
 
       if (shouldIgnore) {
-        console.log(`  -> Disabling node "${node.name}"`);
         node.isActive = false;
         // Se il nodo è ignorato, ignora anche tutti i suoi figli
         this.toggleNodeChildren(node, false);

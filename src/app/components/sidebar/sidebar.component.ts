@@ -14,6 +14,7 @@ export class SidebarComponent {
   items = [
     { label: 'Hello World', path: '/hello' },
     { label: 'Directory Tree', path: '/directory-tree' },
+    { label: 'CSV Analyzer', path: '/csv-analyzer' },
     // Aggiungi qui i prossimi tool: es. { label: 'Regex Tester', path: '/regex' }
   ];
 }
