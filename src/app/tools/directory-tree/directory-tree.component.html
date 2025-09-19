@@ -1,0 +1,99 @@
+<div class="directory-tree-container">
+  <h2>Directory Tree Generator</h2>
+  <p class="description">
+    Genera una rappresentazione testuale della struttura delle directory utilizzando caratteri ASCII.
+  </p>
+
+  <div class="input-section">
+    <div class="form-group">
+      <label for="path-input">Percorso della directory:</label>
+      <div class="path-input-container">
+        <input
+          id="path-input"
+          type="text"
+          [(ngModel)]="directoryPath"
+          placeholder="es. C:\Progetti\mio-progetto o /home/user/projects"
+          class="path-input"
+          [disabled]="loading"
+        />
+        <button
+          class="browse-button"
+          (click)="browseFolder()"
+          [disabled]="loading"
+          title="Seleziona cartella"
+        >
+          📁 Browse
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          [(ngModel)]="includeFiles"
+          [disabled]="loading"
+        />
+        <span>Includi file (solo directory per default)</span>
+      </label>
+    </div>
+
+    <div class="button-group">
+      <button
+        class="generate-button"
+        (click)="generateTree()"
+        [disabled]="loading || !directoryPath.trim()"
+      >
+        {{ loading ? 'Generazione...' : 'Genera Struttura' }}
+      </button>
+
+      <button
+        *ngIf="result"
+        class="clear-button"
+        (click)="clearResult()"
+        [disabled]="loading"
+      >
+        Pulisci
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="result" class="result-section">
+    <div class="result-header">
+      <h3>Struttura generata:</h3>
+      <div class="header-actions">
+        <span class="instruction">Clicca sui nodi per escluderli dalla copia</span>
+        <button
+          class="copy-button"
+          (click)="copyToClipboard()"
+          title="Copia nella clipboard (esclude nodi grigi)"
+        >
+          📋 Copia
+        </button>
+      </div>
+    </div>
+
+    <div class="tree-output">
+      <ng-container *ngFor="let node of parsedTree">
+        <ng-container *ngTemplateOutlet="nodeTemplate; context: { node: node }"></ng-container>
+      </ng-container>
+    </div>
+
+    <ng-template #nodeTemplate let-node="node">
+      <div
+        class="tree-node"
+        [class.inactive]="!node.isActive"
+        (click)="toggleNode(node)"
+      >
+        <span class="node-content">{{ node.prefix }}{{ node.connector }}{{ node.name }}</span>
+      </div>
+      <ng-container *ngFor="let child of node.children">
+        <ng-container *ngTemplateOutlet="nodeTemplate; context: { node: child }"></ng-container>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>

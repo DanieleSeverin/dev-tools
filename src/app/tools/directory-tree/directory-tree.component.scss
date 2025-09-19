@@ -1,0 +1,254 @@
+.directory-tree-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  h2 {
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .description {
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+}
+
+.input-section {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+}
+
+.path-input-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.path-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+}
+
+.browse-button {
+  background: #6f42c1;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #563d7c;
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: normal;
+
+  input[type="checkbox"] {
+    margin-right: 0.5rem;
+    transform: scale(1.1);
+  }
+
+  span {
+    color: #555;
+  }
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.generate-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #0056b3;
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.clear-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #545b62;
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #f5c6cb;
+  margin-bottom: 1.5rem;
+}
+
+.result-section {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+
+  h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .instruction {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+  }
+}
+
+.copy-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #1e7e34;
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.tree-output {
+  margin: 0;
+  padding: 1.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  background: #f8f9fa;
+  overflow-x: auto;
+  color: #333;
+  user-select: none;
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 2px;
+
+  &:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+
+  &.inactive {
+    color: #999;
+    opacity: 0.6;
+
+    .node-content {
+      text-decoration: line-through;
+    }
+
+    &:hover {
+      background-color: rgba(108, 117, 125, 0.1);
+    }
+  }
+
+  .node-content {
+    white-space: pre;
+    color: inherit;
+    transition: text-decoration 0.2s ease;
+  }
+}
